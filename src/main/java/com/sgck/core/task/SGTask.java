@@ -1,6 +1,7 @@
 package com.sgck.core.task;
 
 import flex.messaging.io.amf.ASObject;
+import net.sf.json.JSONObject;
 
 /**
  * 任务父类
@@ -13,11 +14,10 @@ public class SGTask {
 	protected int timeoutInSesc;
 	protected int type = SGTaskType.BACKGROUND_TASK;
 	protected long createTime;
-	protected Runnable taskCmd = null;	//任务主体
-	protected TaskCallback taskCallback = null;	//任务结果回调
+	protected Runnable taskCmd = null; // 任务主体
+	protected TaskCallback taskCallback = null; // 任务结果回调
 
-	public SGTask(String id, int type, Object contentObj, int timeoutInSesc, Runnable taskCmd,
-			TaskCallback taskCallback) {
+	public SGTask(String id, int type, Object contentObj, int timeoutInSesc, Runnable taskCmd, TaskCallback taskCallback) {
 		this.id = id;
 		this.type = type;
 		this.content = contentObj;
@@ -112,8 +112,7 @@ public class SGTask {
 			if (status == TaskStatus.STATUS_FINISH) {
 				taskCallback.onOK(result);
 			} else {
-				ASObject pResult = (ASObject) result;
-				taskCallback.onError(pResult);
+				taskCallback.onError(result);
 			}
 		}
 	}
@@ -134,5 +133,12 @@ public class SGTask {
 	 */
 	public void restetCTime() {
 		this.createTime = System.currentTimeMillis();
+	}
+
+	public JSONObject getTaskResult() {
+		JSONObject json = new JSONObject();
+		json.put("status", getStatus());
+		json.put("result", getResult());
+		return json;
 	}
 }
